@@ -158,8 +158,8 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 -- z3 opts
-vim.opt.shiftwidth = 4
-vim.opt.tabstop = 4
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
 
 -- z3 mappings
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'move selection up' })
@@ -217,6 +217,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- z3 autocommand
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { '*.js', '*.jsx', '*.ts', '*.tsx' },
+  callback = function()
+    vim.lsp.buf.format { async = true }
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -269,7 +277,6 @@ require('lazy').setup({
       },
     },
   },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
