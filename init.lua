@@ -217,13 +217,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- z3 autocommand
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { '*.js', '*.jsx', '*.ts', '*.tsx' },
-  callback = function()
-    vim.lsp.buf.format { async = true }
-  end,
-})
+--vim.api.nvim_create_autocmd('BufWritePre', {
+--pattern = { '*.js', '*.jsx', '*.ts', '*.tsx' },
+--callback = function()
+--require('conform').format { async = true }
+--end,
+--})
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -749,6 +748,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
+        print 'format_on_save called'
         local disable_filetypes = { c = true, cpp = true }
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
@@ -768,7 +768,10 @@ require('lazy').setup({
         python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascript = { 'prettier', 'prettierd', stop_after_first = true },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
       },
     },
   },
@@ -902,10 +905,8 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       --default tokyonight theme
-      --vim.cmd.colorscheme 'tokyonight-night'
+      --vim.cmd.colorscheme = 'tokyonight-night'
       vim.cmd.colorscheme 'terafox'
-      --vim.cmd.colorscheme 'poimandres'
-      --vim.cmd.colorscheme 'nightfox'
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,

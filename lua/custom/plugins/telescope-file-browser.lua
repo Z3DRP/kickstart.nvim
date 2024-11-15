@@ -32,6 +32,6 @@ return {
       },
     }
     telescope.load_extension 'file_browser'
-    vim.keymap.set('n', '<leader>fb', ':Telescope file_browser<CR>', { noremap = true, silent = true })
+    vim.keymap.set('n', '<leader>Fb', ':Telescope file_browser<CR>', { noremap = true, silent = true })
   end,
 }
