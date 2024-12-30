@@ -158,14 +158,17 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 -- z3 opts
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
 
 -- z3 mappings
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'move selection up' })
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'move selection down' })
 vim.keymap.set('n', '<leader>Tc', ':bd <CR>', { desc = 'close current buffer' })
 vim.keymap.set('n', '<leader>Tn', ':enew <CR>', { desc = 'open new buffer' })
+
+-- exit mode aka map for esc
+vim.keymap.set('v', '<CMD-e>', '<Esc>', { desc = 'escape without esc', noremap = true, silent = true })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -569,7 +572,7 @@ require('lazy').setup({
 
           --Z3dev mappings
           -- Hover documentation my custom keymap
-          map('<leader>d', vim.lsp.buf.hover, 'View [T]ype')
+          map('<leader>tt', vim.lsp.buf.hover, 'View [T]ype')
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -664,6 +667,8 @@ require('lazy').setup({
         pyright = {},
         html = {},
         htmx = {},
+        eslint = {},
+        ts_ls = {},
         dockerls = {},
         docker_compose_language_service = {},
         css_variables = {},
@@ -672,6 +677,8 @@ require('lazy').setup({
         tailwindcss = {},
         yamlls = {},
         rust_analyzer = {},
+        nginx_language_server = {},
+        jsonls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -682,7 +689,7 @@ require('lazy').setup({
         --
 
         lua_ls = {
-          -- cmd = {...},
+          -- cmd = {...},,
           -- filetypes = { ...},
           -- capabilities = {},
           settings = {
@@ -832,10 +839,10 @@ require('lazy').setup({
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
           -- defaul Select the [n]ext item
-          --['<C-n>'] = cmp.mapping.select_next_item(),
+          --['<C-d>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
-          --['<C-p>'] = cmp.mapping.select_prev_item(),
-
+          --['<C-s>'] = cmp.mapping.select_prev_item(),
+          --['<Tab>'] = cmp.mapping.confirm { select = true },
           -- Scroll the documentation window [b]ack / [f]orward
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -848,7 +855,7 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<S-CR>'] = cmp.mapping.confirm { select = true },
           ['<Tab>'] = cmp.mapping.select_next_item(),
           ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
@@ -893,24 +900,25 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      --default tokyonight theme
-      --vim.cmd.colorscheme = 'tokyonight-night'
-      vim.cmd.colorscheme 'terafox'
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
+  --{ -- You can easily change to a different colorscheme.
+  -- Change the name of the colorscheme plugin below, and then
+  -- change the command in the config to whatever the name of that colorscheme is.
+  --
+  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --'folke/tokyonight.nvim',
+  --priority = 1000, -- Make sure to load this before all the other start plugins.
+  --init = function()
+  -- Load the colorscheme here.
+  -- Like many other themes, this one has different styles, and you could load
+  -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --default tokyonight theme
+  --vim.cmd.colorscheme = 'tokyonight-night'
+  --vim.cmd.colorscheme 'miasma'
+  --vim.cmd.colorscheme 'terafox',
+  -- You can configure highlights by doing something like:
+  --vim.cmd.hi 'Comment gui=none'
+  --end,
+  --},
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = true } },
@@ -958,7 +966,25 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'go', 'diff', 'html', 'lua', 'luadoc', 'javascript', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'go',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'javascript',
+        'css',
+        'json',
+        'tsx',
+        'typescript',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -990,7 +1016,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 

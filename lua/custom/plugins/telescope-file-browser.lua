@@ -6,6 +6,7 @@ return {
 
     telescope.setup {
       defaults = {
+        hidden = true,
         mappings = {
           n = {
             ['<C-d>'] = function(prompt_bufnr)
@@ -27,6 +28,8 @@ return {
       },
       extensions = {
         file_browser = {
+          hidden = true,
+          respect_gitignore = false,
           hijack_netrw = true,
         },
       },

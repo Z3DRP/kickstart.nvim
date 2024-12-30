@@ -14,13 +14,14 @@ return {
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
 
+    'theHamsta/nvim-dap-virtual-text',
     -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
 
     -- Installs the debug adapters for you
+    'Weissle/persistent-breakpoints.nvim',
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
   },
@@ -29,11 +30,56 @@ return {
     local dapui = require 'dapui'
     return {
       -- Basic debugging keymaps, feel free to change to your liking!
-      { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
-      { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
-      { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
-      { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
+      { '<leader>db', dap.continue, desc = 'Debug: Start/Continue' },
+      { '<leader>dsi', dap.step_into, desc = 'Debug: Step Into' },
+      { '<leader>dsu', dap.step_over, desc = 'Debug: Step Over' },
+      { '<leader>dso', dap.step_out, desc = 'Debug: Step Out' },
       { '<leader>b', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
+      {
+        '<Leader>dr',
+        function()
+          require('dap').repl.open()
+        end,
+        desc = 'Open Repl',
+      },
+      {
+        '<Leader>dl',
+        function()
+          require('dap').run_last()
+        end,
+        desc = 'Run Last Repl',
+      },
+      {
+        '<leader>do',
+        function()
+          dapui.open()
+        end,
+        desc = '[D]ebug [O]pen DAP UI',
+      },
+      {
+        '<leader>dc',
+        function()
+          dapui.close()
+        end,
+        desc = '[D]ebug [C]lose DAP UI',
+      },
+      {
+        '<leader>dt',
+        function()
+          dapui.toggle()
+        end,
+        desc = '[D]bug [T]oggle DAP UI',
+      },
+
+      {
+        '<leader>dx',
+        function()
+          dap.terminate()
+          dapui.close()
+        end,
+        desc = '[D]ebug Exit Session',
+      },
+
       {
         '<leader>B',
         function()
@@ -75,6 +121,8 @@ return {
       --    Don't feel like these are good choices.
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
+        enabled = true,
+        element = 'repl',
         icons = {
           pause = '⏸',
           play = '▶',
@@ -86,6 +134,62 @@ return {
           terminate = '⏹',
           disconnect = '⏏',
         },
+      },
+      force_buffers = true,
+      element_mappings = {},
+      expand_lines = true,
+      floating = {
+        border = 'single',
+        mappings = {
+          close = { 'q', '<ESC>' },
+        },
+      },
+      layouts = {
+        {
+          elements = {
+            {
+              id = 'scopes',
+              size = 0.25,
+            },
+            {
+              id = 'breakpoints',
+              size = 0.25,
+            },
+            {
+              id = 'stacks',
+              size = 0.25,
+            },
+            {
+              id = 'watches',
+              size = 0.25,
+            },
+          },
+          position = 'left',
+          size = 40,
+        },
+        {
+          elements = { {
+            id = 'repl',
+            size = 0.5,
+          }, {
+            id = 'console',
+            size = 0.5,
+          } },
+          position = 'bottom',
+          size = 10,
+        },
+      },
+      mappings = {
+        edit = 'e',
+        expand = { '<CR>', '<2-LeftMouse>' },
+        open = 'o',
+        remove = 'd',
+        repl = 'r',
+        toggle = 't',
+      },
+      render = {
+        indent = 1,
+        max_value_lines = 100,
       },
     }
 
@@ -101,17 +205,110 @@ return {
     --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     -- end
 
+    dap.configurations.go = {
+      -- {
+      --   type = 'go',
+      --   name = 'Attach to Process',
+      --   request = 'attach',
+      --   mode = 'remote',
+      --   host = '127.0.0.1',
+      --   port = 2345, -- Matches the Delve port
+      -- },
+      -- {
+      --   type = 'go',
+      --   name = 'Debug Main',
+      --   request = 'launch',
+      --   program = '${file}', -- This uses the currently open file
+      --   cwd = vim.fn.getcwd(), -- Sets working directory to project root
+      --   env = {
+      --     CONFIG_PATH = '~/Dev/zportfolio-service/config',
+      --   },
+      -- },
+      -- {
+      --   type = 'go',
+      --   name = 'Zport Serv',
+      --   request = 'launch',
+      --   program = '${file}',
+      --   args = { '-arg1=value1', '-arg2=value2' }, -- Custom program args
+      --   buildFlags = "-gcflags 'all=-N -l'",
+      -- },
+    }
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
     -- Install golang specific config
     require('dap-go').setup {
+      dap_configurations = {
+        -- {
+        --   type = 'go',
+        --   name = 'Attach Rizmote',
+        --   mode = 'remote',
+        --   request = 'attach',
+        -- },
+        -- {
+        --   type = 'go',
+        --   name = 'debug main',
+        --   request = 'launch',
+        --   program = '${file}',
+        --   cwd = '${workspaceFolder}',
+        -- },
+      },
       delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
+        -- the path to the executable dlv which will be used for debugging.
+        -- by default, this is the "dlv" executable on your PATH.
+        path = 'dlv',
+        -- time to wait for delve to initialize the debug session.
+        -- default to 20 seconds
+        initialize_timeout_sec = 20,
+        -- a string that defines the port to start delve debugger.
+        -- default to string "${port}" which instructs nvim-dap
+        -- to start the process in a random available port.
+        -- if you set a port in your debug configuration, its value will be
+        -- assigned dynamically.
+        port = '${port}',
+        -- additional args to pass to dlv
+        args = {},
+        -- the build flags that are passed to delve.
+        -- defaults to empty string, but can be used to provide flags
+        -- such as "-tags=unit" to make sure the test suite is
+        -- compiled during debugging, for example.
+        -- passing build flags using args is ineffective, as those are
+        -- ignored by delve in dap mode.
+        -- avaliable ui interactive function to prompt for arguments get_arguments
+        build_flags = "-gcflags 'all=-N -l'",
+        -- whether the dlv process to be created detached or not. there is
+        -- an issue on Windows where this needs to be set to false
+        -- otherwise the dlv server creation will fail.
+        -- avaliable ui interactive function to prompt for build flags: get_build_flags
         detached = vim.fn.has 'win32' == 0,
+        -- the current working directory to run dlv from, if other than
+        -- the current working directory.
+        cwd = vim.fn.getcwd(),
+      },
+      -- options related to running closest test
+      tests = {
+        -- enables verbosity when running the test.
+        verbose = false,
       },
     }
+    require('persistent-breakpoints').setup {
+      save_dir = vim.fn.stdpath 'data' .. '/breakpoints/',
+      load_breakpoints_event = { 'BufReadPost' },
+      perf_record_event = { 'BufWritePost' },
+    }
+
+    local opts = { noremap = true, silent = true }
+    local keymap = vim.api.nvim_set_keymap
+    -- Save breakpoints to file automatically.
+    keymap('n', '<leader>tpb', "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>", opts)
+    keymap('n', '<leader>tpc', "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", opts)
+    keymap('n', '<leader>tca', "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", opts)
+    keymap('n', '<leader>slp', "<cmd>lua require('persistent-breakpoints.api').set_log_point()<cr>", opts)
+
+    require('nvim-dap-virtual-text').setup()
+    -- require('persistent-breakpoints').setup {
+    --   load_breakpoints_event = { 'BufReadPost' },
+    -- }
   end,
 }

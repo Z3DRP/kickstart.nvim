@@ -9,17 +9,9 @@ return {
     'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
     'MunifTanjim/nui.nvim',
   },
-  cmd = 'Neotree',
-  keys = {
-    { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
-  },
-  opts = {
-    filesystem = {
-      window = {
-        mappings = {
-          ['\\'] = 'close_window',
-        },
-      },
-    },
-  },
+  config = function()
+    vim.keymap.set('n', '<leader>Fsl', ':Neotree filesystem reveal left<CR>', {})
+    vim.keymap.set('n', '<leader>Fsc', ':Neotree close <CR>', {})
+    vim.keymap.set('n', '<leader>Fsf', ':Neotree buffers reveal float<CR>', {})
+  end,
 }
