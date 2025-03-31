@@ -30,10 +30,10 @@ return {
     local dapui = require 'dapui'
     return {
       -- Basic debugging keymaps, feel free to change to your liking!
-      { '<leader>db', dap.continue, desc = 'Debug: Start/Continue' },
-      { '<leader>dsi', dap.step_into, desc = 'Debug: Step Into' },
-      { '<leader>dsu', dap.step_over, desc = 'Debug: Step Over' },
-      { '<leader>dso', dap.step_out, desc = 'Debug: Step Out' },
+      { '<leader>dD', dap.continue, desc = 'Debug: Start/Continue' },
+      { '<leader>di', dap.step_into, desc = 'Debug: Step Into' },
+      { '<leader>du', dap.step_over, desc = 'Debug: Step Over' },
+      { '<leader>do', dap.step_out, desc = 'Debug: Step Out' },
       { '<leader>b', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
       {
         '<Leader>dr',
@@ -301,10 +301,10 @@ return {
     local opts = { noremap = true, silent = true }
     local keymap = vim.api.nvim_set_keymap
     -- Save breakpoints to file automatically.
-    keymap('n', '<leader>tpb', "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>", opts)
-    keymap('n', '<leader>tpc', "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", opts)
-    keymap('n', '<leader>tca', "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", opts)
-    keymap('n', '<leader>slp', "<cmd>lua require('persistent-breakpoints.api').set_log_point()<cr>", opts)
+    keymap('n', '<leader>db', "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>", opts)
+    keymap('n', '<leader>dB', "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", opts)
+    keymap('n', '<leader>dR', "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", opts)
+    keymap('n', '<leader>dL', "<cmd>lua require('persistent-breakpoints.api').set_log_point()<cr>", opts)
 
     require('nvim-dap-virtual-text').setup()
     -- require('persistent-breakpoints').setup {

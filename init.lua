@@ -664,7 +664,24 @@ require('lazy').setup({
         },
         golangci_lint_ls = {},
         templ = {},
-        pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                typeChckingMode = 'strict',
+                autoImportCompletions = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = 'workspace',
+                autoSearchPaths = true,
+                inlayHints = {
+                  variableTypes = true,
+                  functionReturnTypes = true,
+                  callArgumentNames = true,
+                },
+              },
+            },
+          },
+        },
         html = {},
         htmx = {},
         eslint = {},
